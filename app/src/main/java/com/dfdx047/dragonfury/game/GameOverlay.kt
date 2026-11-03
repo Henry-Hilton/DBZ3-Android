@@ -33,7 +33,6 @@ import com.dfdx047.dragonfury.data.AppPaths
 import com.dfdx047.dragonfury.data.DarkMode
 import com.dfdx047.dragonfury.data.GameConfig
 import com.dfdx047.dragonfury.data.LauncherPrefs
-import com.dfdx047.dragonfury.data.ThemeMode
 import com.dfdx047.dragonfury.data.TouchMode
 import com.dfdx047.dragonfury.ui.theme.DragonFuryTheme
 import org.libsdl.app.DragonFuryPad
@@ -203,7 +202,7 @@ class GameOverlay(private val activity: Activity) : InputManager.InputDeviceList
             setViewTreeSavedStateRegistryOwner(owner)
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnDetachedFromWindowOrReleasedFromPool)
             setContent {
-                DragonFuryTheme(themeMode = ThemeMode.DRAGON, darkMode = DarkMode.DARK) {
+                DragonFuryTheme(themeMode = prefs.themeMode, darkMode = DarkMode.DARK) {
                     InGameOverlay(screen.value, prefs, this@GameOverlay)
                 }
             }

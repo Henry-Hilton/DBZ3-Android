@@ -4,6 +4,7 @@ package com.dfdx047.dragonfury.ui
 
 import androidx.annotation.StringRes
 import androidx.compose.foundation.background
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
@@ -40,7 +41,8 @@ import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationRailItem
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.ScrollableTabRow
+import androidx.compose.material3.SecondaryScrollableTabRow
+import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
@@ -55,7 +57,6 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -72,8 +73,7 @@ import com.dfdx047.dragonfury.ui.screens.ModsScreen
 import com.dfdx047.dragonfury.ui.screens.PerformanceScreen
 import com.dfdx047.dragonfury.ui.screens.SettingsScreen
 import com.dfdx047.dragonfury.ui.screens.TexturesScreen
-import com.dfdx047.dragonfury.ui.theme.DfColors
-import com.dfdx047.dragonfury.ui.theme.LogoStyle
+import com.dfdx047.dragonfury.data.ThemeMode
 
 enum class LauncherTab(@StringRes val title: Int, val icon: ImageVector) {
     HOME(R.string.tab_home, Icons.Filled.Home),
@@ -92,6 +92,7 @@ fun LauncherApp(vm: LauncherViewModel) {
     var tab by rememberSaveable { mutableStateOfTab() }
     val snackbar = remember { SnackbarHostState() }
     val context = LocalContext.current
+    val legacy = vm.themeMode == ThemeMode.MATERIAL_2
 
     LaunchedEffect(vm.message) {
         val m = vm.message ?: return@LaunchedEffect
@@ -121,21 +122,8 @@ fun LauncherApp(vm: LauncherViewModel) {
                 }
             } else {
                 Column(Modifier.fillMaxSize()) {
-                    Header()
-                    ScrollableTabRow(
-                        selectedTabIndex = tab.ordinal,
-                        edgePadding = 12.dp,
-                        containerColor = MaterialTheme.colorScheme.background,
-                    ) {
-                        LauncherTab.entries.forEach { t ->
-                            Tab(
-                                selected = t == tab,
-                                onClick = { tab = t },
-                                text = { Text(stringResource(t.title), maxLines = 1) },
-                                icon = { Icon(t.icon, null) },
-                            )
-                        }
-                    }
+                    Header(legacy)
+                    LauncherTabs(tab, legacy) { tab = it }
                     BusyBar(vm.busy)
                     TabContent(tab, vm) { tab = it }
                 }
@@ -150,30 +138,38 @@ fun LauncherApp(vm: LauncherViewModel) {
 private fun mutableStateOfTab() = androidx.compose.runtime.mutableStateOf(LauncherTab.HOME)
 
 @Composable
-private fun Header() {
-    Row(
-        Modifier
-            .fillMaxWidth()
-            .background(
-                Brush.horizontalGradient(listOf(DfColors.Navy, DfColors.BlueDeep, DfColors.OrangeDeep)),
-            )
-            .padding(horizontal = 16.dp, vertical = 12.dp),
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        Icon(
-            painterResource(R.drawable.ic_launcher_foreground),
-            null,
-            tint = androidx.compose.ui.graphics.Color.Unspecified,
-            modifier = Modifier.size(48.dp),
-        )
-        Spacer(Modifier.width(8.dp))
+private fun Header(legacy: Boolean) {
+    val title: @Composable () -> Unit = {
         Column {
-            Text("DRAGON FURY", style = LogoStyle, color = DfColors.Yellow)
-            Text(
-                stringResource(R.string.header_subtitle),
-                style = MaterialTheme.typography.labelMedium,
-                color = androidx.compose.ui.graphics.Color.White.copy(alpha = 0.85f),
-            )
+            Text(stringResource(R.string.app_name), style = MaterialTheme.typography.titleLarge)
+            Text(stringResource(R.string.header_subtitle), style = MaterialTheme.typography.labelMedium)
+        }
+    }
+    val logo: @Composable () -> Unit = {
+        Image(painterResource(R.drawable.budokai_logo), null, Modifier.padding(horizontal = 12.dp).size(40.dp))
+    }
+    if (legacy) androidx.compose.material.TopAppBar(title = title, navigationIcon = logo,
+        backgroundColor = MaterialTheme.colorScheme.surface, contentColor = MaterialTheme.colorScheme.onSurface)
+    else TopAppBar(title = title, navigationIcon = logo, windowInsets = WindowInsets(0))
+}
+
+@Composable
+private fun LauncherTabs(selected: LauncherTab, legacy: Boolean, onSelect: (LauncherTab) -> Unit) {
+    if (legacy) {
+        androidx.compose.material.ScrollableTabRow(selected.ordinal, edgePadding = 12.dp,
+            backgroundColor = MaterialTheme.colorScheme.surface, contentColor = MaterialTheme.colorScheme.onSurface) {
+            LauncherTab.entries.forEach { tab ->
+                androidx.compose.material.Tab(selected == tab, { onSelect(tab) },
+                    text = { androidx.compose.material.Text(stringResource(tab.title), maxLines = 1) },
+                    icon = { androidx.compose.material.Icon(tab.icon, null) })
+            }
+        }
+    } else {
+        SecondaryScrollableTabRow(selected.ordinal, edgePadding = 12.dp) {
+            LauncherTab.entries.forEach { tab ->
+                Tab(selected == tab, { onSelect(tab) }, text = { Text(stringResource(tab.title), maxLines = 1) },
+                    icon = { Icon(tab.icon, null) })
+            }
         }
     }
 }
@@ -190,7 +186,7 @@ private fun SideRail(selected: LauncherTab, onSelect: (LauncherTab) -> Unit) {
             verticalArrangement = Arrangement.spacedBy(4.dp),
         ) {
             Icon(
-                painterResource(R.drawable.ic_launcher_foreground),
+                painterResource(R.drawable.budokai_logo),
                 null,
                 tint = androidx.compose.ui.graphics.Color.Unspecified,
                 modifier = Modifier.size(56.dp),

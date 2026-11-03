@@ -38,7 +38,7 @@ import com.dfdx047.dragonfury.R
 import com.dfdx047.dragonfury.ui.LauncherViewModel
 import com.dfdx047.dragonfury.ui.UpdateState
 import com.dfdx047.dragonfury.ui.components.SectionCard
-import com.dfdx047.dragonfury.ui.theme.LogoStyle
+
 
 @Composable
 fun AboutScreen(vm: LauncherViewModel) {
@@ -53,8 +53,8 @@ fun AboutScreen(vm: LauncherViewModel) {
         verticalArrangement = Arrangement.spacedBy(14.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        Icon(painterResource(R.drawable.ic_launcher_foreground), null, tint = Color.Unspecified, modifier = Modifier.size(140.dp))
-        Text("DRAGON FURY", style = LogoStyle, color = MaterialTheme.colorScheme.primary)
+        Icon(painterResource(R.drawable.budokai_logo), null, tint = Color.Unspecified, modifier = Modifier.size(140.dp))
+        Text("DRAGON FURY", style = MaterialTheme.typography.headlineMedium, color = MaterialTheme.colorScheme.primary)
         Text(stringResource(R.string.about_version, BuildConfig.VERSION_NAME, BuildConfig.VERSION_CODE), style = MaterialTheme.typography.bodyMedium)
         Text(stringResource(R.string.about_developer, DragonFuryApp.DEVELOPER), style = MaterialTheme.typography.titleMedium)
 

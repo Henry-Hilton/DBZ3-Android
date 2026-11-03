@@ -3,6 +3,9 @@
 package com.dfdx047.dragonfury.game
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.size
+import androidx.compose.ui.res.painterResource
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -15,12 +18,10 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.PlayArrow
-import androidx.compose.material.icons.filled.Tune
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -160,22 +161,22 @@ private fun InGameMenuCard(prefs: LauncherPrefs, actions: InGameActions) {
         Modifier
             .padding(12.dp)
             .widthIn(max = 560.dp)
-            .background(Color(0xE6120C1E), RoundedCornerShape(24.dp))
-            .border(1.dp, Color.White.copy(alpha = 0.18f), RoundedCornerShape(24.dp))
+            .background(MaterialTheme.colorScheme.surfaceContainer, MaterialTheme.shapes.extraLarge)
+            .border(1.dp, MaterialTheme.colorScheme.outlineVariant, MaterialTheme.shapes.extraLarge)
             .verticalScroll(rememberScrollState())
             .padding(18.dp),
         verticalArrangement = Arrangement.spacedBy(10.dp),
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
-            Icon(Icons.Filled.Tune, null, tint = DfColors.Yellow)
+            Image(painterResource(R.drawable.budokai_logo), null, Modifier.size(42.dp))
             Spacer(Modifier.width(8.dp))
             Column(Modifier.weight(1f)) {
-                Text(stringResource(R.string.ingame_title), style = MaterialTheme.typography.titleLarge, color = Color.White)
-                Text(stringResource(R.string.ingame_paused), style = MaterialTheme.typography.bodySmall, color = Color.White.copy(alpha = 0.7f))
+                Text(stringResource(R.string.ingame_title), style = MaterialTheme.typography.titleLarge, color = MaterialTheme.colorScheme.onSurface)
+                Text(stringResource(R.string.ingame_paused), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
             }
         }
 
-        Text(stringResource(R.string.settings_touch), color = Color.White, style = MaterialTheme.typography.labelLarge)
+        Text(stringResource(R.string.settings_touch), color = MaterialTheme.colorScheme.onSurface, style = MaterialTheme.typography.labelLarge)
         Segmented(
             listOf(
                 TouchMode.AUTO to stringResource(R.string.touch_mode_auto),
@@ -189,7 +190,7 @@ private fun InGameMenuCard(prefs: LauncherPrefs, actions: InGameActions) {
             actions.applyAppearance()
         }
 
-        Text(stringResource(R.string.ingame_directional), color = Color.White, style = MaterialTheme.typography.labelLarge)
+        Text(stringResource(R.string.ingame_directional), color = MaterialTheme.colorScheme.onSurface, style = MaterialTheme.typography.labelLarge)
         Segmented(
             listOf(Directional.DPAD to stringResource(R.string.directional_dpad), Directional.STICK to stringResource(R.string.directional_stick)),
             directional,
@@ -199,7 +200,7 @@ private fun InGameMenuCard(prefs: LauncherPrefs, actions: InGameActions) {
             actions.applyAppearance()
         }
 
-        Text(stringResource(R.string.settings_touch_style), color = Color.White, style = MaterialTheme.typography.labelLarge)
+        Text(stringResource(R.string.settings_touch_style), color = MaterialTheme.colorScheme.onSurface, style = MaterialTheme.typography.labelLarge)
         Segmented(
             listOf(ControlStyle.DRAGON to "Dragon Fury", ControlStyle.XBOX to "Xbox", ControlStyle.PLAYSTATION to "PlayStation"),
             style,
@@ -210,7 +211,7 @@ private fun InGameMenuCard(prefs: LauncherPrefs, actions: InGameActions) {
         }
 
         if (style == ControlStyle.DRAGON) {
-            Text(stringResource(R.string.ingame_badge), color = Color.White, style = MaterialTheme.typography.labelLarge)
+            Text(stringResource(R.string.ingame_badge), color = MaterialTheme.colorScheme.onSurface, style = MaterialTheme.typography.labelLarge)
             Segmented(
                 listOf(ButtonBadge.XBOX to "Xbox", ButtonBadge.PLAYSTATION to "PlayStation", ButtonBadge.NONE to stringResource(R.string.badge_none)),
                 badge,
@@ -222,7 +223,7 @@ private fun InGameMenuCard(prefs: LauncherPrefs, actions: InGameActions) {
         }
 
         Row(verticalAlignment = Alignment.CenterVertically) {
-            Text(stringResource(R.string.settings_touch_opacity), color = Color.White, modifier = Modifier.width(110.dp))
+            Text(stringResource(R.string.settings_touch_opacity), color = MaterialTheme.colorScheme.onSurface, modifier = Modifier.width(110.dp))
             Slider(
                 value = opacity,
                 onValueChange = { opacity = it },
@@ -233,10 +234,10 @@ private fun InGameMenuCard(prefs: LauncherPrefs, actions: InGameActions) {
                 valueRange = 0.1f..1f,
                 modifier = Modifier.weight(1f),
             )
-            Text("${(opacity * 100).roundToInt()}%", color = Color.White, modifier = Modifier.width(48.dp).padding(start = 6.dp))
+            Text("${(opacity * 100).roundToInt()}%", color = MaterialTheme.colorScheme.onSurface, modifier = Modifier.width(48.dp).padding(start = 6.dp))
         }
         Row(verticalAlignment = Alignment.CenterVertically) {
-            Text(stringResource(R.string.settings_touch_haptics), color = Color.White, modifier = Modifier.weight(1f))
+            Text(stringResource(R.string.settings_touch_haptics), color = MaterialTheme.colorScheme.onSurface, modifier = Modifier.weight(1f))
             Switch(checked = haptics, onCheckedChange = {
                 haptics = it
                 prefs.touchHaptics = it
@@ -291,16 +292,16 @@ private fun InGameMenuCard(prefs: LauncherPrefs, actions: InGameActions) {
 private fun SliderRow(title: String, value: Float, range: ClosedFloatingPointRange<Float>, label: (Float) -> String, onDone: (Float) -> Unit) {
     var v by remember(value) { mutableFloatStateOf(value) }
     Row(verticalAlignment = Alignment.CenterVertically) {
-        Text(title, color = Color.White, modifier = Modifier.width(120.dp))
+        Text(title, color = MaterialTheme.colorScheme.onSurface, modifier = Modifier.width(120.dp))
         Slider(value = v, onValueChange = { v = it }, onValueChangeFinished = { onDone(v) }, valueRange = range, modifier = Modifier.weight(1f))
-        Text(label(v), color = Color.White, modifier = Modifier.width(52.dp).padding(start = 6.dp))
+        Text(label(v), color = MaterialTheme.colorScheme.onSurface, modifier = Modifier.width(52.dp).padding(start = 6.dp))
     }
 }
 
 @Composable
 private fun SwitchRow(title: String, checked: Boolean, onChange: (Boolean) -> Unit) {
     Row(verticalAlignment = Alignment.CenterVertically) {
-        Text(title, color = Color.White, modifier = Modifier.weight(1f))
+        Text(title, color = MaterialTheme.colorScheme.onSurface, modifier = Modifier.weight(1f))
         Switch(checked = checked, onCheckedChange = onChange)
     }
 }
@@ -323,18 +324,18 @@ private fun PortOptionsCard(actions: InGameActions) {
         Modifier
             .padding(12.dp)
             .widthIn(max = 600.dp)
-            .background(Color(0xE6120C1E), RoundedCornerShape(24.dp))
-            .border(1.dp, Color.White.copy(alpha = 0.18f), RoundedCornerShape(24.dp))
+            .background(MaterialTheme.colorScheme.surfaceContainer, MaterialTheme.shapes.extraLarge)
+            .border(1.dp, MaterialTheme.colorScheme.outlineVariant, MaterialTheme.shapes.extraLarge)
             .verticalScroll(rememberScrollState())
             .padding(18.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp),
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
-            Icon(Icons.Filled.Tune, null, tint = DfColors.Yellow)
+            Image(painterResource(R.drawable.budokai_logo), null, Modifier.size(42.dp))
             Spacer(Modifier.width(8.dp))
             Column(Modifier.weight(1f)) {
-                Text(stringResource(R.string.port_menu_title), style = MaterialTheme.typography.titleLarge, color = Color.White)
-                Text(stringResource(R.string.ingame_paused), style = MaterialTheme.typography.bodySmall, color = Color.White.copy(alpha = 0.7f))
+                Text(stringResource(R.string.port_menu_title), style = MaterialTheme.typography.titleLarge, color = MaterialTheme.colorScheme.onSurface)
+                Text(stringResource(R.string.ingame_paused), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
             }
         }
 
@@ -381,7 +382,7 @@ private fun PortOptionsCard(actions: InGameActions) {
         Text(
             stringResource(R.string.port_menu_restart_note),
             style = MaterialTheme.typography.bodySmall,
-            color = Color.White.copy(alpha = 0.7f),
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
 
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.fillMaxWidth()) {

@@ -92,10 +92,10 @@ fun SettingsScreen(vm: LauncherViewModel) {
         SectionCard(stringResource(R.string.settings_app), Icons.Filled.Palette) {
             SettingSegmented(
                 title = stringResource(R.string.settings_theme),
-                subtitle = if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S) stringResource(R.string.settings_theme_material_unavailable) else null,
                 options = listOf(
-                    ThemeMode.DRAGON to "Dragon Fury",
+                    ThemeMode.DRAGON to "Material 3",
                     ThemeMode.MATERIAL_YOU to "Material You",
+                    ThemeMode.MATERIAL_2 to "Material 2",
                 ),
                 selected = vm.themeMode,
                 onSelect = vm::setTheme,

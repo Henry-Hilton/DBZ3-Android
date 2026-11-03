@@ -1,2 +1,4 @@
 *.sh text eol=lf
 *.patch text eol=lf
+/gradlew text eol=lf
+/tools/upstream-game.rev text eol=lf

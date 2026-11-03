@@ -3,7 +3,7 @@ package com.dfdx047.dragonfury.data
 import android.content.Context
 import android.content.SharedPreferences
 
-enum class ThemeMode(val key: String) { DRAGON("dragon"), MATERIAL_YOU("material_you") }
+enum class ThemeMode(val key: String) { DRAGON("dragon"), MATERIAL_YOU("material_you"), MATERIAL_2("material_2") }
 enum class DarkMode(val key: String) { SYSTEM("system"), LIGHT("light"), DARK("dark") }
 enum class AppLanguage(val tag: String) { SYSTEM(""), PORTUGUESE("pt"), ENGLISH("en"), SPANISH("es") }
 

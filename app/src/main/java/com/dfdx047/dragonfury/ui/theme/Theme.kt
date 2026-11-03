@@ -4,17 +4,15 @@ import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.ColorScheme
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Typography
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.dynamicDarkColorScheme
 import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.sp
 import com.dfdx047.dragonfury.data.DarkMode
 import com.dfdx047.dragonfury.data.ThemeMode
 
@@ -82,18 +80,6 @@ private val DragonDark = darkColorScheme(
     error = Color(0xFFFF6B5E),
 )
 
-private val DfTypography = Typography().let { t ->
-    t.copy(
-        headlineMedium = t.headlineMedium.copy(fontWeight = FontWeight.Black),
-        headlineSmall = t.headlineSmall.copy(fontWeight = FontWeight.ExtraBold),
-        titleLarge = t.titleLarge.copy(fontWeight = FontWeight.ExtraBold),
-        titleMedium = t.titleMedium.copy(fontWeight = FontWeight.Bold),
-        labelLarge = t.labelLarge.copy(fontWeight = FontWeight.Bold, letterSpacing = 0.6.sp),
-    )
-}
-
-val LogoStyle = TextStyle(fontWeight = FontWeight.Black, fontSize = 30.sp, letterSpacing = 1.sp)
-
 @Composable
 fun DragonFuryTheme(themeMode: ThemeMode, darkMode: DarkMode, content: @Composable () -> Unit) {
     val dark = when (darkMode) {
@@ -107,5 +93,21 @@ fun DragonFuryTheme(themeMode: ThemeMode, darkMode: DarkMode, content: @Composab
     } else {
         if (dark) DragonDark else DragonLight
     }
-    MaterialTheme(colorScheme = scheme, typography = DfTypography, content = content)
+    val legacy = themeMode == ThemeMode.MATERIAL_2
+    val shapes = if (legacy) androidx.compose.material3.Shapes(
+        small = RoundedCornerShape(4.dp), medium = RoundedCornerShape(4.dp), large = RoundedCornerShape(8.dp),
+        extraLarge = RoundedCornerShape(8.dp),
+    ) else androidx.compose.material3.Shapes()
+    MaterialTheme(colorScheme = scheme, shapes = shapes) {
+        if (legacy) {
+            val colors = (if (dark) androidx.compose.material.darkColors() else androidx.compose.material.lightColors()).copy(
+                primary = scheme.primary, onPrimary = scheme.onPrimary,
+                secondary = scheme.secondary, onSecondary = scheme.onSecondary,
+                surface = scheme.surface, onSurface = scheme.onSurface,
+                background = scheme.background, onBackground = scheme.onBackground,
+                error = scheme.error, onError = scheme.onError,
+            )
+            androidx.compose.material.MaterialTheme(colors = colors, content = content)
+        } else content()
+    }
 }

@@ -11,7 +11,7 @@ class DragonFuryApp : Application() {
 
     companion object {
         /** Repositorio do port (pagina "Sobre" e verificacao de atualizacoes). */
-        const val GITHUB_OWNER = "dfdx047"
+        const val GITHUB_OWNER = "Henry-Hilton"
         const val GITHUB_REPO = "DBZ3-Android"
         const val GITHUB_URL = "https://github.com/$GITHUB_OWNER/$GITHUB_REPO"
         const val DEVELOPER = "dfdx047"

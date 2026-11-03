@@ -7,6 +7,7 @@ import com.dfdx047.dragonfury.BuildConfig
 import com.dfdx047.dragonfury.DragonFuryApp
 import com.dfdx047.dragonfury.data.AppPaths
 import com.dfdx047.dragonfury.data.Http
+import org.json.JSONArray
 import org.json.JSONObject
 import java.io.File
 
@@ -34,32 +35,38 @@ data class UpdateInfo(
  * "## Português" / "## English"); sem secoes, o mesmo texto serve aos dois.
  */
 object UpdateChecker {
-    private const val LATEST =
-        "https://api.github.com/repos/${DragonFuryApp.GITHUB_OWNER}/${DragonFuryApp.GITHUB_REPO}/releases/latest"
+    private const val RELEASES =
+        "https://api.github.com/repos/${DragonFuryApp.GITHUB_OWNER}/${DragonFuryApp.GITHUB_REPO}/releases?per_page=30"
 
     fun currentVersion(): String = BuildConfig.VERSION_NAME
 
     /** null = ja esta na ultima versao. Lanca excecao se nao der para verificar. */
     fun check(): UpdateInfo? {
-        val r = JSONObject(Http.getText(LATEST))
-        val tag = r.optString("tag_name").removePrefix("v").removePrefix("V")
-        if (tag.isBlank() || !isNewer(tag, currentVersion())) return null
-        val body = r.optString("body")
-        val (pt, en, es) = splitChangelog(body)
-        val assets = r.optJSONArray("assets")
-        var apkUrl: String? = null
-        var apkSize = 0L
-        if (assets != null) {
-            for (i in 0 until assets.length()) {
-                val a = assets.getJSONObject(i)
-                if (a.optString("name").endsWith(".apk", true)) {
-                    apkUrl = a.optString("browser_download_url")
-                    apkSize = a.optLong("size")
-                    break
-                }
-            }
+        val releases = JSONArray(Http.getText(RELEASES))
+        var newest: UpdateInfo? = null
+        for (i in 0 until releases.length()) {
+            val candidate = readRelease(releases.getJSONObject(i)) ?: continue
+            if (isNewer(candidate.version, newest?.version ?: currentVersion())) newest = candidate
         }
-        return UpdateInfo(tag, r.optString("name").ifBlank { tag }, pt, en, es, r.optString("html_url"), apkUrl, apkSize)
+        return newest
+    }
+
+    private fun readRelease(release: JSONObject): UpdateInfo? {
+        if (release.optBoolean("draft")) return null
+        val tag = release.optString("tag_name").removePrefix("v").removePrefix("V")
+        if (!Regex("[0-9]+[.][0-9]+[.][0-9]+(?:-[A-Za-z0-9.-]+)?").matches(tag)) return null
+        val assets = release.optJSONArray("assets") ?: return null
+        val prefix = "${DragonFuryApp.GITHUB_URL}/releases/download/"
+        for (i in 0 until assets.length()) {
+            val asset = assets.getJSONObject(i)
+            val url = asset.optString("browser_download_url")
+            val size = asset.optLong("size")
+            if (!asset.optString("name").endsWith(".apk", true) || !url.startsWith(prefix) || size <= 0) continue
+            val (pt, en, es) = splitChangelog(release.optString("body"))
+            return UpdateInfo(tag, release.optString("name").ifBlank { tag }, pt, en, es,
+                release.optString("html_url"), url, size)
+        }
+        return null
     }
 
     fun splitChangelog(body: String): Triple<String, String, String> {

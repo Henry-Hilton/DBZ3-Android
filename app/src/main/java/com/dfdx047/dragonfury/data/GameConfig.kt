@@ -17,7 +17,7 @@ import java.io.File
 data class GameConfig(
     // Desempenho / imagem
     val resolutionScale: Int = 1,             // dbz3_resolution_scale 1-3 (720p x N; so escalas inteiras)
-    val presentEffect: String = "fsr",        // dbz3_present_effect bilinear|cas|fsr
+    val presentEffect: String = "fsr",        // dbz3_present_effect bilinear|cas|fsr|sgsr
     val fsrRender: String = "native",         // dbz3_fsr_render native|quality|balanced|performance|ultra_performance
     val fsrSharpness: Double = 0.2,           // dbz3_fsr_sharpness 0-2 (0 = mais nitido)
     val casSharpness: Double = 0.0,           // dbz3_cas_sharpness 0-1
@@ -103,7 +103,7 @@ data class GameConfig(
     )
 
     companion object {
-        val EFFECTS = listOf("bilinear", "cas", "fsr")
+        val EFFECTS = listOf("bilinear", "cas", "fsr", "sgsr")
         val FSR_RENDER = listOf("native", "quality", "balanced", "performance", "ultra_performance")
         val FXAA = listOf("none", "fxaa", "fxaa_extreme")
         const val MAX_RESOLUTION_SCALE = 3

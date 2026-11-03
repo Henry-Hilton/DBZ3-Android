@@ -63,7 +63,7 @@ Importing directly from the ISO is planned.
 | Tab | What it does |
 |---|---|
 | **Home** | Import/verify the game, play, quick shortcuts. |
-| **Performance** | 30 FPS mode, internal resolution (1x/2x/3x), game effects (bloom, depth of field, FXAA), image filters (FSR 1, CAS, sharpness), aspect ratio, GPU optimizations. |
+| **Performance** | 30 FPS mode, internal resolution (1x/2x/3x), game effects (bloom, depth of field, FXAA), image filters (FSR 1, CAS, Snapdragon GSR 1, sharpness), aspect ratio, GPU optimizations. |
 | **Controls** | Touch controls (layouts for menus, fights and the Dragon Universe map; on-screen editor, opacity, vibration) and physical controller (dead zone, rumble). |
 | **Mods** | Install mods from `.zip` (same format as the PC version's `mods/` folder). |
 | **Textures** | Import and manage HD texture packs. |

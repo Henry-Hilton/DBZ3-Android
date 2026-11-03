@@ -341,7 +341,7 @@ private fun PortOptionsCard(actions: InGameActions) {
 
         Text(stringResource(R.string.settings_image), color = DfColors.Yellow, style = MaterialTheme.typography.titleSmall)
         Segmented(
-            listOf("bilinear" to "Bilinear", "cas" to "AMD CAS", "fsr" to "AMD FSR 1"),
+            listOf("bilinear" to "Bilinear", "cas" to "AMD CAS", "fsr" to "AMD FSR 1", "sgsr" to "Snapdragon GSR 1"),
             c.presentEffect,
         ) { set(c.copy(presentEffect = it), mapOf("dbz3_present_effect" to it)) }
         if (c.presentEffect == "fsr") {

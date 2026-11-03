@@ -97,19 +97,7 @@ set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 #-----------------------------------------------------------------------------
-# Jogo (mesma lista de fontes do CMakeLists.txt do projeto original v1.4.5.1,
-# build US): inclui Tag Team, online (src/net), campanhas, escenarios de mods e
-# os ecras proprios do jogo. Desde a v1.4.4.5 o main.cpp e o roster_ext.cpp
-# chamam o Tag Team e os paineis diretamente, por isso ja nao sao opcionais.
-#-----------------------------------------------------------------------------
-# O external/dbz3 tem de estar na v1.4.5.1 ou mais nova (stage_ext.cpp nasceu
-# ai). Os patches de patches/game/ sao escritos contra essa versao.
-if(NOT EXISTS "${DBZ3_ROOT}/src/stage_ext.cpp")
-    message(FATAL_ERROR
-        "external/dbz3 desatualizado (falta src/stage_ext.cpp, v1.4.5.1).\n"
-        "Atualiza-o para origin/master do projeto original (ver docs/ESTADO.md,\n"
-        "'Atualizar o external/dbz3') e corre bash tools/apply-sdk-patches.sh.")
-endif()
+# Game sources from the pinned upstream US build.
 set(DBZ3_SOURCES
     ${DBZ3_ROOT}/src/main.cpp
     ${DBZ3_ROOT}/src/hooks.cpp
@@ -118,6 +106,7 @@ set(DBZ3_SOURCES
     ${DBZ3_ROOT}/src/select_ext.cpp
     ${DBZ3_ROOT}/src/stage_ext.cpp
     ${DBZ3_ROOT}/src/mods.cpp
+    ${DBZ3_ROOT}/src/mods_opcionales.cpp
     ${DBZ3_ROOT}/src/native_mods.cpp
     ${DBZ3_ROOT}/src/region.cpp
     ${DBZ3_ROOT}/src/launcher/settings.cpp
@@ -134,13 +123,62 @@ set(DBZ3_SOURCES
     ${DBZ3_ROOT}/src/ingame/menu_pilot.cpp
     ${DBZ3_ROOT}/src/ingame/online_panel.cpp
     ${DBZ3_ROOT}/src/ingame/tagteam_panel.cpp
+    ${DBZ3_ROOT}/src/ingame/color_panel.cpp
+    ${DBZ3_ROOT}/src/ingame/tutorial.cpp
     ${DBZ3_ROOT}/src/net/netplay.cpp
     ${DBZ3_ROOT}/src/net/room.cpp
     ${DBZ3_ROOT}/src/net/netplay_hooks.cpp
     ${DBZ3_ROOT}/src/tagteam.cpp
     ${DBZ3_ROOT}/src/tagteam_slots.cpp
     ${DBZ3_ROOT}/src/campaigns.cpp
+    ${DBZ3_ROOT}/src/hub.cpp
+    ${DBZ3_ROOT}/src/escenarios.cpp
+    ${DBZ3_ROOT}/src/clima.cpp
+    ${DBZ3_ROOT}/src/cine.cpp
+    ${DBZ3_ROOT}/src/gigantes.cpp
+    ${DBZ3_ROOT}/src/pasarela.cpp
+    ${DBZ3_ROOT}/src/pasarela_b1.cpp
+    ${DBZ3_ROOT}/src/pasarela_misiones.cpp
+    ${DBZ3_ROOT}/src/hub_menu.cpp
+    ${DBZ3_ROOT}/src/ingame/hub_panel.cpp
+    ${DBZ3_ROOT}/src/modos.cpp
+    ${DBZ3_ROOT}/src/rpg.cpp
+    ${DBZ3_ROOT}/src/heroe.cpp
+    ${DBZ3_ROOT}/src/heroe_ui.cpp
+    ${DBZ3_ROOT}/src/cac/cac.cpp
+    ${DBZ3_ROOT}/src/fusion.cpp
+    ${DBZ3_ROOT}/src/pasarela_iw.cpp
+    ${DBZ3_ROOT}/src/pasarela_b2.cpp
+    ${DBZ3_ROOT}/src/pasarela_nave.cpp
+    ${DBZ3_ROOT}/src/tactics/prueba_figuras.cpp
+    ${DBZ3_ROOT}/src/tactics/entrada.cpp
+    ${DBZ3_ROOT}/src/tactics/sim.cpp
+    ${DBZ3_ROOT}/src/tactics/catalogo.cpp
+    ${DBZ3_ROOT}/src/tactics/partida.cpp
+    ${DBZ3_ROOT}/src/iw_minijuegos.cpp
+    ${DBZ3_ROOT}/src/cinematica.cpp
+    ${DBZ3_ROOT}/src/freecam.cpp
+    ${DBZ3_ROOT}/src/ports_guard.cpp
+    ${DBZ3_ROOT}/src/ports_regs_luchadores.cpp
+    ${DBZ3_ROOT}/src/combate.cpp
+    ${DBZ3_ROOT}/src/plugins.cpp
+    ${DBZ3_ROOT}/src/transformaciones.cpp
+    ${DBZ3_ROOT}/src/video_sfd.cpp
+    ${DBZ3_ROOT}/src/anim_iw.cpp
+    ${DBZ3_ROOT}/src/suelo_iw.cpp
+    ${DBZ3_ROOT}/src/ps2_modelo.cpp
+    ${DBZ3_ROOT}/src/iw_mini_botones.cpp
+    ${DBZ3_ROOT}/src/iw_mini_vuelo.cpp
+    ${DBZ3_ROOT}/src/iw_mini_disparo.cpp
+    ${DBZ3_ROOT}/src/iw_mini_extra.cpp
+    ${DBZ3_ROOT}/src/datos.cpp
 )
+
+find_package(Python3 REQUIRED COMPONENTS Interpreter)
+if(NOT EXISTS "${DBZ3_ROOT}/src/escenarios_sel_gen.inc")
+    execute_process(COMMAND "${Python3_EXECUTABLE}" "${DBZ3_ROOT}/tools/gen_escenarios_sel.py"
+                    COMMAND_ERROR_IS_FATAL ANY)
+endif()
 
 # -Pdf.fullSources / DBZ3_FULL_SOURCES ficou sem efeito (as fontes acima sao
 # sempre compiladas). Lido aqui so para o CMake nao avisar "variavel nao usada".
@@ -150,6 +188,13 @@ endif()
 
 # Codigo recompilado do yae3_xenon.xex (define GENERATED_SOURCES).
 include("${DBZ3_GENERATED}/sources.cmake")
+set_source_files_properties(${GENERATED_SOURCES} PROPERTIES COMPILE_DEFINITIONS DBZ3_RBW_TU=1)
+file(READ "${DBZ3_GENERATED}/dbz3_pch.h" DBZ3_PCH_TEXT)
+string(FIND "${DBZ3_PCH_TEXT}" "net/rb_store.h" DBZ3_RB_HEADER)
+if(DBZ3_RB_HEADER EQUAL -1)
+    file(APPEND "${DBZ3_GENERATED}/dbz3_pch.h" "\n#include \"../src/net/rb_store.h\"\n")
+endif()
+
 
 # Opcoes do codigo recompilado:
 #  - so tabelas de linhas no debug info (os .o ficam pequenos e o link rapido,

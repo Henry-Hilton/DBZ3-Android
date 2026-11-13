@@ -1,3 +1,5 @@
+> **Deprecated:** This project is no longer maintained. Releases are retained for reference; no further builds are planned.
+
 <p align="center"><img src="docs/banner.png" alt="Dragon Fury â€” Dragon Ball Z: Budokai 3 HD for Android" width="100%"></p>
 
 <p align="center">
